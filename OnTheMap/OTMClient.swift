@@ -10,7 +10,7 @@ import Foundation
 
 class OTMClient : NSObject {
     
-    var session : NSURLSession
+    var session: NSURLSession
     
     let BASE_URL = "https://www.udacity.com/api/session"
     var sessionToken: String?
@@ -130,6 +130,15 @@ class OTMClient : NSObject {
             print("Could not parse the data as JSON: '\(data)'")
         }
         return parsedResult
+    }
+    
+    class func sharedInstance() -> OTMClient {
+        
+        struct Singleton {
+            static var sharedInstance = OTMClient()
+        }
+        
+        return Singleton.sharedInstance
     }
     
 }

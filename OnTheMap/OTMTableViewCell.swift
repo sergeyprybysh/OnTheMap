@@ -14,4 +14,5 @@ class OTMTableViewCell: UITableViewCell {
     
     @IBOutlet weak var pinImage: UIImageView!
     @IBOutlet weak var studentsName: UILabel!
+    
 }

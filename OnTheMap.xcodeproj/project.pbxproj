@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A550DDC01C5D764500FA2C77 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A550DDBF1C5D764500FA2C77 /* TabBarController.swift */; };
 		A55132441C1D58EC00AB40D0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55132431C1D58EC00AB40D0 /* AppDelegate.swift */; };
 		A55132461C1D58EC00AB40D0 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55132451C1D58EC00AB40D0 /* MapViewController.swift */; };
 		A55132481C1D58EC00AB40D0 /* TableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55132471C1D58EC00AB40D0 /* TableViewController.swift */; };
@@ -21,6 +22,7 @@
 		A5B63FD81C42529A00412B89 /* OTMConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B63FD71C42529A00412B89 /* OTMConstants.swift */; };
 		A5B63FDB1C54A98600412B89 /* StudentLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B63FDA1C54A98600412B89 /* StudentLocation.swift */; };
 		A5B63FDF1C57549400412B89 /* OTMTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B63FDE1C57549400412B89 /* OTMTableViewCell.swift */; };
+		A5E1A2161C5DED9C00238291 /* InformationPostingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E1A2151C5DED9C00238291 /* InformationPostingViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A550DDBF1C5D764500FA2C77 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		A55132401C1D58EC00AB40D0 /* OnTheMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OnTheMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A55132431C1D58EC00AB40D0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A55132451C1D58EC00AB40D0 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -61,6 +64,7 @@
 		A5B63FD71C42529A00412B89 /* OTMConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTMConstants.swift; sourceTree = "<group>"; };
 		A5B63FDA1C54A98600412B89 /* StudentLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentLocation.swift; sourceTree = "<group>"; };
 		A5B63FDE1C57549400412B89 /* OTMTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTMTableViewCell.swift; sourceTree = "<group>"; };
+		A5E1A2151C5DED9C00238291 /* InformationPostingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InformationPostingViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +92,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A550DDBD1C5D75BF00FA2C77 /* OTMController */ = {
+			isa = PBXGroup;
+			children = (
+				A55132731C1D59D300AB40D0 /* LogInViewController.swift */,
+				A55132451C1D58EC00AB40D0 /* MapViewController.swift */,
+				A55132471C1D58EC00AB40D0 /* TableViewController.swift */,
+				A550DDBF1C5D764500FA2C77 /* TabBarController.swift */,
+				A5E1A2151C5DED9C00238291 /* InformationPostingViewController.swift */,
+			);
+			name = OTMController;
+			sourceTree = "<group>";
+		};
+		A550DDBE1C5D761800FA2C77 /* OTMView */ = {
+			isa = PBXGroup;
+			children = (
+				A5B63FDE1C57549400412B89 /* OTMTableViewCell.swift */,
+			);
+			name = OTMView;
+			sourceTree = "<group>";
+		};
 		A55132371C1D58EC00AB40D0 = {
 			isa = PBXGroup;
 			children = (
@@ -111,17 +135,15 @@
 		A55132421C1D58EC00AB40D0 /* OnTheMap */ = {
 			isa = PBXGroup;
 			children = (
-				A5B63FD91C54A96F00412B89 /* Modal */,
+				A550DDBE1C5D761800FA2C77 /* OTMView */,
+				A550DDBD1C5D75BF00FA2C77 /* OTMController */,
+				A5B63FD91C54A96F00412B89 /* OTMModal */,
 				A55132431C1D58EC00AB40D0 /* AppDelegate.swift */,
-				A55132451C1D58EC00AB40D0 /* MapViewController.swift */,
-				A55132471C1D58EC00AB40D0 /* TableViewController.swift */,
 				A55132491C1D58EC00AB40D0 /* Main.storyboard */,
 				A551324C1C1D58EC00AB40D0 /* Assets.xcassets */,
 				A551324E1C1D58EC00AB40D0 /* LaunchScreen.storyboard */,
 				A55132511C1D58EC00AB40D0 /* Info.plist */,
-				A55132731C1D59D300AB40D0 /* LogInViewController.swift */,
 				A5B63FD41C424DAB00412B89 /* Client */,
-				A5B63FDE1C57549400412B89 /* OTMTableViewCell.swift */,
 			);
 			path = OnTheMap;
 			sourceTree = "<group>";
@@ -154,12 +176,12 @@
 			name = Client;
 			sourceTree = "<group>";
 		};
-		A5B63FD91C54A96F00412B89 /* Modal */ = {
+		A5B63FD91C54A96F00412B89 /* OTMModal */ = {
 			isa = PBXGroup;
 			children = (
 				A5B63FDA1C54A98600412B89 /* StudentLocation.swift */,
 			);
-			name = Modal;
+			name = OTMModal;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -296,11 +318,13 @@
 				A5B63FDB1C54A98600412B89 /* StudentLocation.swift in Sources */,
 				A55132741C1D59D300AB40D0 /* LogInViewController.swift in Sources */,
 				A55132481C1D58EC00AB40D0 /* TableViewController.swift in Sources */,
+				A550DDC01C5D764500FA2C77 /* TabBarController.swift in Sources */,
 				A5B63FD81C42529A00412B89 /* OTMConstants.swift in Sources */,
 				A55132761C27D63E00AB40D0 /* OTMClient.swift in Sources */,
 				A55132441C1D58EC00AB40D0 /* AppDelegate.swift in Sources */,
 				A5B63FD61C424DE300412B89 /* OTMConvenience.swift in Sources */,
 				A55132461C1D58EC00AB40D0 /* MapViewController.swift in Sources */,
+				A5E1A2161C5DED9C00238291 /* InformationPostingViewController.swift in Sources */,
 				A5B63FDF1C57549400412B89 /* OTMTableViewCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

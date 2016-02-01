@@ -35,5 +35,10 @@ extension OTMClient {
         static let uniqueKey = "uniqueKey"
         static let updatedAt = "updatedAt"
     }
+    
+    struct AppConstants {
+        static let logOutButtonLable = "Logout"
+        static let navigationItemTitle = "On The Map"
+    }
             
 }

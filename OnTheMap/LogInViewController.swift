@@ -27,7 +27,7 @@ class LogInViewController: UIViewController {
        @IBAction func tapLogInButton(sender: AnyObject) {
         let logIn = logInTextField.text
         let password = passwordTextField.text
-        OTMClient().getSessionToken(logIn!, password: password!){(success, error) in
+        OTMClient.sharedInstance().getSessionToken(logIn!, password: password!){(success, error) in
             if success {
                 self.launchMapViewController()
             }

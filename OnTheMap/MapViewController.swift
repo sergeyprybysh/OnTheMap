@@ -16,15 +16,14 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     var studentLocations: [StudentLocation]?
     
+    let applicationDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-       // updateAnnotations()
+        refreshData()
     }
     
-    override func viewWillAppear(animated: Bool) {
-        updateAnnotations()
-    }
-     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         
         let reuseId = "map_pin"
@@ -53,37 +52,45 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     }
     
     func updateAnnotations() {
-        OTMClient().getStudentLocations(){ (studentLocations, error) in
+        var annotations = [MKPointAnnotation]()
+        
+        for student in studentLocations! {
+            
+            let lat = CLLocationDegrees(student.latitude)
+            let long = CLLocationDegrees(student.longitude)
+            let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
+            
+            let first = student.firstName
+            let last = student.lastName
+            let mediaURL = student.mediaURL
+            
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            annotation.title = "\(first) \(last)"
+            annotation.subtitle = mediaURL
+            
+            annotations.append(annotation)
+        }
+        self.mapView.addAnnotations(annotations)
+    }
+    
+    func refreshData() {
+        OTMClient.sharedInstance().getStudentLocations(){ (studentLocations, error) in
             if let locationsArray = studentLocations  {
-                
-                let applicationDelegate = (UIApplication.sharedApplication().delegate as! AppDelegate)
-                applicationDelegate.studentArray = locationsArray
-                var annotations = [MKPointAnnotation]()
-                
-                for student in locationsArray {
-                    
-                    let lat = CLLocationDegrees(student.latitude)
-                    let long = CLLocationDegrees(student.longitude)
-                    let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: long)
-                    
-                    let first = student.firstName
-                    let last = student.lastName
-                    let mediaURL = student.mediaURL
-                    
-                    let annotation = MKPointAnnotation()
-                    annotation.coordinate = coordinate
-                    annotation.title = "\(first) \(last)"
-                    annotation.subtitle = mediaURL
-                    
-                    annotations.append(annotation)
-                }
-               self.mapView.addAnnotations(annotations)
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.studentLocations = locationsArray
+                    self.applicationDelegate.studentArray = locationsArray
+                    self.updateAnnotations()
+                 })
             }
             else {
-                print(error)
+                dispatch_async(dispatch_get_main_queue(), {
+                    let alert = UIAlertController(title: error!, message: "Try again later", preferredStyle: UIAlertControllerStyle.Alert)
+                    alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
+                    self.presentViewController(alert, animated: true, completion: nil)
+                })
             }
         }
-
     }
 }
 
