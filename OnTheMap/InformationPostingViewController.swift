@@ -12,6 +12,8 @@ import MapKit
 
 class InformationPostingViewController: UIViewController, UITextFieldDelegate, MKMapViewDelegate {
     
+    @IBOutlet weak var cancelButton: UIButton!
+    
     @IBOutlet weak var whereStudyingLable: UILabel!
     
     @IBOutlet weak var mapView: MKMapView!
@@ -25,6 +27,10 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
     @IBOutlet weak var topView: UIView!
     
     @IBAction func tapFinfOnMapButton(sender: AnyObject) {
+    }
+    
+    @IBAction func tapCancelButton(sender: AnyObject) {
+        presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
     }
     
     override func viewDidLoad() {
@@ -45,6 +51,8 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
        
         findOnMapButton.backgroundColor = UIColor.whiteColor()
         roundButtonCorner(findOnMapButton)
+        
+        locationTextField.attributedPlaceholder = NSAttributedString(string: "Enter Your Location Here", attributes: [NSForegroundColorAttributeName:UIColor.whiteColor()])
     }
     
     func roundButtonCorner(button: UIButton){
