@@ -12,7 +12,6 @@ class OTMClient : NSObject {
     
     var session: NSURLSession
     
-    let BASE_URL = "https://www.udacity.com/api/session"
     var sessionToken: String?
     
     override init() {
@@ -20,15 +19,16 @@ class OTMClient : NSObject {
         super.init()
     }
     
-    func taskForPOSTMethod(urlArg: String, body: NSData, completionHandler: (result: AnyObject!, error: NSError?) -> Void) -> NSURLSessionDataTask {
+    func taskForPOSTMethod(urlArg: String, headers: [String: String], body: NSData, completionHandler: (result: AnyObject!, error: NSError?) -> Void) -> NSURLSessionDataTask {
     
-        let urlString = urlArg  //OTMClient.escapedParameters(parameters)
+        let urlString = urlArg
         let url = NSURL(string: urlString)!
         let request = NSMutableURLRequest(URL: url)
         
         request.HTTPMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Accept")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        for (key, value) in headers {
+            request.addValue(value, forHTTPHeaderField: key)
+        }
         request.HTTPBody = body
         
         let task = session.dataTaskWithRequest(request) { (data, response, downloadError) in
@@ -53,8 +53,7 @@ class OTMClient : NSObject {
                 return
             }
             completionHandler(result: data, error: nil)
-        }
-        
+        }        
        task.resume()
        return task
     }
@@ -106,8 +105,6 @@ class OTMClient : NSObject {
         return task
     }
     
-    
-    
     class func escapedParameters(parameters: [String : AnyObject]) -> String {
         
         var urlVars = [String]()
@@ -126,6 +123,16 @@ class OTMClient : NSObject {
         do {
             let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5))
             parsedResult = try NSJSONSerialization.JSONObjectWithData(newData, options: .AllowFragments)
+        } catch {
+            print("Could not parse the data as JSON: '\(data)'")
+        }
+        return parsedResult
+    }
+    class func parseJSON(data: AnyObject) -> AnyObject {
+        
+        var parsedResult: AnyObject!
+        do {
+            parsedResult = try NSJSONSerialization.JSONObjectWithData(data as! NSData, options: .AllowFragments)
         } catch {
             print("Could not parse the data as JSON: '\(data)'")
         }

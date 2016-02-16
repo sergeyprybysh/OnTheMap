@@ -23,6 +23,7 @@
 		A5B63FDB1C54A98600412B89 /* StudentLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B63FDA1C54A98600412B89 /* StudentLocation.swift */; };
 		A5B63FDF1C57549400412B89 /* OTMTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5B63FDE1C57549400412B89 /* OTMTableViewCell.swift */; };
 		A5E1A2161C5DED9C00238291 /* InformationPostingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E1A2151C5DED9C00238291 /* InformationPostingViewController.swift */; };
+		A5E1A2181C6C56FA00238291 /* OnTheMapUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5E1A2171C6C56FA00238291 /* OnTheMapUser.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,7 @@
 		A5B63FDA1C54A98600412B89 /* StudentLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentLocation.swift; sourceTree = "<group>"; };
 		A5B63FDE1C57549400412B89 /* OTMTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTMTableViewCell.swift; sourceTree = "<group>"; };
 		A5E1A2151C5DED9C00238291 /* InformationPostingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InformationPostingViewController.swift; sourceTree = "<group>"; };
+		A5E1A2171C6C56FA00238291 /* OnTheMapUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnTheMapUser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -180,6 +182,7 @@
 			isa = PBXGroup;
 			children = (
 				A5B63FDA1C54A98600412B89 /* StudentLocation.swift */,
+				A5E1A2171C6C56FA00238291 /* OnTheMapUser.swift */,
 			);
 			name = OTMModal;
 			sourceTree = "<group>";
@@ -319,6 +322,7 @@
 				A55132741C1D59D300AB40D0 /* LogInViewController.swift in Sources */,
 				A55132481C1D58EC00AB40D0 /* TableViewController.swift in Sources */,
 				A550DDC01C5D764500FA2C77 /* TabBarController.swift in Sources */,
+				A5E1A2181C6C56FA00238291 /* OnTheMapUser.swift in Sources */,
 				A5B63FD81C42529A00412B89 /* OTMConstants.swift in Sources */,
 				A55132761C27D63E00AB40D0 /* OTMClient.swift in Sources */,
 				A55132441C1D58EC00AB40D0 /* AppDelegate.swift in Sources */,
