@@ -10,28 +10,65 @@ import Foundation
 
 extension OTMClient {
         
-    func getSessionToken(logIn: String, password: String, completionHandler: (sussess: Bool, error: String?)-> Void){
+    func getSessionToken(logIn: String, password: String, completionHandler: (sussess: Bool, results: [String : AnyObject]?, error: [String : AnyObject]?)-> Void){
         let baseURL = Constants.udacitySessionHost
         let body = setUpBodySessionToken(logIn, password: password)
         let headers = ["Accept" : "application/json", "Content-Type" : "application/json"]
         var parsedJson: AnyObject!
         taskForPOSTMethod(baseURL,headers: headers, body: body!) { (result, error) -> Void in
             guard (error == nil) else {
-                completionHandler(sussess: false, error: error?.description)
+                completionHandler(sussess: false, results: nil, error: [OTMClient.Constants.statusCodeError : (error?.userInfo[OTMClient.Constants.statusCodeError])!])
                 return
             }
-            parsedJson = OTMClient.parseJSONForUdacitySession(result)
+            parsedJson = OTMClient.parseJSONForUdacitySession(result!)
+            var data = [String: AnyObject]()
             if let sessionJson = parsedJson[OTMClient.JSONResponseKeys.sessionObject]{
                 if let sID = sessionJson![OTMClient.JSONResponseKeys.sessionId] {
-                    self.sessionToken = (sID as! String)
-                    completionHandler(sussess: true, error: nil)
+                    data = [OTMClient.JSONResponseKeys.sessionId : sID!]
                 }
                 else{
-                    completionHandler(sussess: false, error: "Failed to parce Session Id")
+                    completionHandler(sussess: false, results:  nil, error: [OTMClient.Constants.messageError : "Failed to parce Session Id"])
                 }
             }
             else{
-                completionHandler(sussess: false, error: "Failed to parce Session Object")
+                completionHandler(sussess: false, results: nil, error: [OTMClient.Constants.messageError : "Failed to parce Session JSON"])
+            }
+            if let accountJson = parsedJson[OTMClient.JSONResponseKeys.account]{
+                if let accID = accountJson![OTMClient.JSONResponseKeys.accountKey] {
+                    data[OTMClient.JSONResponseKeys.accountKey] = accID!
+                }
+                else{
+                    completionHandler(sussess: false, results:  nil, error: [OTMClient.Constants.messageError : "Failed to parce Account Key"])
+                }
+            }
+            else{
+                completionHandler(sussess: false, results: nil, error: [OTMClient.Constants.messageError : "Failed to parce Account JSON"])
+            }
+            completionHandler(sussess: true, results: data, error: nil)
+        }
+    }
+    
+    func getUserDetails(user : OnTheMapUser, complitionHandler: (results: [String: AnyObject]?, error: String) -> Void){
+        
+        let urlSrting = OTMClient.Constants.udacityUserURL + "/" + user.uniqueKey!
+        let parameters = [String : String]()
+        let headers = ["Accept" : "application/json", "Content-Type" : "application/json"]
+        
+        var parsedJson: AnyObject!
+        taskForGetMethod(urlSrting, parameters: parameters, headers: headers) { (results, error) -> Void in
+            guard (error == nil) else {
+                complitionHandler(results: nil, error: (error?.description)!)
+                return
+            }
+            parsedJson = OTMClient.parseJSONForUdacitySession(results)
+            var data = [String: AnyObject]()
+            if let userObject = parsedJson["user"] as? NSDictionary {
+                data[OTMClient.JSONResponseKeys.firstName] = userObject["nickname"]
+                data[OTMClient.JSONResponseKeys.lastName] = userObject["last_name"]
+                complitionHandler(results: data, error: "No Error")
+            }
+            else {
+                complitionHandler(results: nil, error: "Unable to parce Json response")
             }
         }
     }
@@ -47,7 +84,14 @@ extension OTMClient {
                 completionHandler(locations: nil, error: error?.description)
                 return
             }
-            if let locations = results[OTMClient.JSONResponseKeys.resultsStudentLocations] {
+            var parsedResult: AnyObject!
+            do {
+                parsedResult = try NSJSONSerialization.JSONObjectWithData(results as! NSData, options: .AllowFragments)
+            } catch {
+                print("Could not parse the data as JSON: '\(results)'")
+            }
+
+            if let locations = parsedResult[OTMClient.JSONResponseKeys.resultsStudentLocations] {
                 let studentLocations = self.convertDataToStudentLocationObject(locations as! [[String : AnyObject]])
                 completionHandler(locations: studentLocations, error: nil)
             }
@@ -86,7 +130,7 @@ extension OTMClient {
                 completionHandler(objectId: nil, error: error?.description)
                 return
             }
-            let jsonResult = OTMClient.parseJSON(result)
+            let jsonResult = OTMClient.parseJSON(result!)
             if let objectID = jsonResult[OTMClient.JSONResponseKeys.objectId]{
                 completionHandler(objectId: objectID as? String, error: nil)
             }

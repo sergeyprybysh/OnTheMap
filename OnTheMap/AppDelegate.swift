@@ -16,6 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var studentArray = [StudentLocation]()
     
     var userOnTheMap = OnTheMapUser()
+    
+    var sessionID: String? = nil
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {

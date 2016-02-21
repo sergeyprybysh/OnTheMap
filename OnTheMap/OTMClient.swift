@@ -12,14 +12,12 @@ class OTMClient : NSObject {
     
     var session: NSURLSession
     
-    var sessionToken: String?
-    
     override init() {
         session = NSURLSession.sharedSession()
         super.init()
     }
     
-    func taskForPOSTMethod(urlArg: String, headers: [String: String], body: NSData, completionHandler: (result: AnyObject!, error: NSError?) -> Void) -> NSURLSessionDataTask {
+    func taskForPOSTMethod(urlArg: String, headers: [String: String], body: NSData, completionHandler: (result: AnyObject?, error: NSError?) -> Void) -> NSURLSessionDataTask {
     
         let urlString = urlArg
         let url = NSURL(string: urlString)!
@@ -41,6 +39,7 @@ class OTMClient : NSObject {
             guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
                 if let response = response as? NSHTTPURLResponse {
                     print("Your request returned an invalid response! Status code: \(response.statusCode)!")
+                    completionHandler(result: nil, error: NSError(domain: "Network", code: 001, userInfo: ["statusCode" : response.statusCode]))
                 } else if let response = response {
                     print("Your request returned an invalid response! Response: \(response)!")
                 } else {
@@ -75,7 +74,6 @@ class OTMClient : NSObject {
                 print("There was an error in POST + \(error)")
                 return
             }
-            
             guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
                 if let response = response as? NSHTTPURLResponse {
                     print("Your request returned an invalid response! Status code: \(response.statusCode)!")
@@ -90,15 +88,8 @@ class OTMClient : NSObject {
                 print("No data was returned by the request!")
                 return
             }
-            
-            var parsedResult: AnyObject!
-            do {
-                parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
-            } catch {
-                print("Could not parse the data as JSON: '\(data)'")
-            }
-            
-            completionHandler(result: parsedResult, error: nil)
+          
+            completionHandler(result: data, error: nil)
 
         }
         task.resume()
