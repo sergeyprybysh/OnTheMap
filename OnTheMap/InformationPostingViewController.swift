@@ -42,7 +42,7 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
         
         let text = linkTextField.text
         guard (text != "") else {
-            showAlertWithText("Field Is Empty", message: "Please, enter URL here")
+            showAlertWithText("Link Field Is Empty", message: "Please, enter URL here")
             return
         }
         
@@ -50,8 +50,8 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
         applicationDelegate.userOnTheMap.mediaURL = text
         applicationDelegate.userOnTheMap.latitude = lat!
         applicationDelegate.userOnTheMap.longitude = long!
-        
-        OTMClient.sharedInstance().postStudentLocation(applicationDelegate.userOnTheMap) { (objectId, error) in
+        if applicationDelegate.userOnTheMap.objectId == nil {
+            OTMClient.sharedInstance().postStudentLocation(applicationDelegate.userOnTheMap) { (objectId, error) in
             guard error == nil else {
                 print(error)
                 return
@@ -60,6 +60,18 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
                 self.applicationDelegate.userOnTheMap.objectId = objectId
                 self.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
             })
+          }
+        }
+        else {
+            OTMClient.sharedInstance().updateStudentLocation(applicationDelegate.userOnTheMap) { (success, error) in
+                guard error == nil else {
+                    print(error)
+                    return
+                }
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
+                })
+            }
         }
     }
     
@@ -67,7 +79,7 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
         
         let text = locationTextField.text
         guard (text != "") else {
-            showAlertWithText("Field Is Empty", message: "Please, enter location here")
+            showAlertWithText("Location Field Is Empty", message: "Please, enter location here")
             return
         }
         
@@ -128,7 +140,6 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
         
         locationTextField.attributedPlaceholder = NSAttributedString(string: "Enter Your Location Here", attributes: [NSForegroundColorAttributeName:UIColor.whiteColor()])
         linkTextField.attributedPlaceholder = NSAttributedString(string: "Enter a Link to Share Here", attributes: [NSForegroundColorAttributeName:UIColor.whiteColor()])
-        //locationTextField.defaultTextAttributes = [NSFontAttributeName : UIFont(name: "HelveticaNeue-CondensedBlack", size: 17)!]
     }
     
     func setButtonCorner(button: UIButton){

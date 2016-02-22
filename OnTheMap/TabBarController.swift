@@ -11,6 +11,8 @@ import UIKit
 
 class TabBarController: UITabBarController {
     
+    let applicationDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setUpViews()
@@ -41,11 +43,74 @@ class TabBarController: UITabBarController {
     }
     
     func logOutAction() {
-        
+
+        let alert = UIAlertController(title: "Log Out", message: "Are you sure you want to Log Out?", preferredStyle: UIAlertControllerStyle.Alert)
+        let overwriteAction = UIAlertAction(title: "Log Out", style: .Default) {(action) in
+            self.userLogOut()
+        }
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: nil))
+        alert.addAction(overwriteAction)
+        dispatch_async(dispatch_get_main_queue(), {
+            self.presentViewController(alert, animated: true, completion: nil)
+        })
+    }
+    
+    func userLogOut() {
+        OTMClient.sharedInstance().deleteSession() { (success, error) in
+            if success{
+                dispatch_async(dispatch_get_main_queue(), {
+                    let logInVC = self.storyboard!.instantiateViewControllerWithIdentifier("logInVC") as! LogInViewController
+                    self.presentViewController(logInVC, animated: true, completion: nil)
+                })
+            }
+            else {
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.showAlertWithText("Log Out Error", message: "There was an error during Log Out. Please, try again later")
+                })
+            }
+        }
     }
     
     func pinAction() {
+        if applicationDelegate.userOnTheMap.objectId != nil {
+            showAlertWithText("Overwrite Location?", message: "Would you like to overwrite your current location?")
+        }
+        else {
+            OTMClient.sharedInstance().queryingForStudentLocation(applicationDelegate.userOnTheMap.uniqueKey!){
+                (success, objectId, error) in
+                guard (error == nil) else {
+                    print(error)
+                    return
+                }
+                if let id = objectId {
+                    self.applicationDelegate.userOnTheMap.objectId = id
+                    dispatch_async(dispatch_get_main_queue(), {
+                    self.showAlertWithText("Overwrite Location?", message: "Would you like to overwrite your current location?")
+                    })
+                }
+                else {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self.presentPostingVC()
+                    })
+                }
+            }
+        }
+    }
+    
+    func presentPostingVC() {
         let infoPostingVC = self.storyboard!.instantiateViewControllerWithIdentifier("informationPostingVC") as! InformationPostingViewController
         presentViewController(infoPostingVC, animated: true, completion: nil)
+    }
+    
+    func showAlertWithText(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        let overwriteAction = UIAlertAction(title: "Overwrite", style: .Default) {(action) in
+            self.presentPostingVC()
+        }
+        alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Default, handler: nil))
+        alert.addAction(overwriteAction)
+        dispatch_async(dispatch_get_main_queue(), {
+        self.presentViewController(alert, animated: true, completion: nil)
+        })
     }
 }

@@ -77,11 +77,11 @@ extension OTMClient {
         
         let baseURL = Constants.parseStudentLocationsHost
         let parametrs = ["limit" : "100"]
-        let headers = ["X-Parse-Application-Id" : Constants.parseApplicationID, "X-Parse-REST-API-Key" : Constants.apiKey]
+        let headers = [OTMClient.Constants.headerParseApplicationID : Constants.parseApplicationID, OTMClient.Constants.headerApiKey : Constants.apiKey]
         
         taskForGetMethod(baseURL, parameters: parametrs, headers: headers) { (results, error) -> Void in
             guard (error == nil) else {
-                completionHandler(locations: nil, error: error?.description)
+                completionHandler(locations: nil, error: error?.localizedDescription)
                 return
             }
             var parsedResult: AnyObject!
@@ -101,10 +101,37 @@ extension OTMClient {
         }
     }
     
+    func queryingForStudentLocation(uniqueKey : String, complitionHandler : (success : Bool, objectID : String?, error: String?) -> Void) {
+        let baseURL = Constants.parseStudentLocationsHost
+        let parametrs = ["where" : "{\"uniqueKey\":\"\(uniqueKey)\"}"]
+        let headers = [OTMClient.Constants.headerParseApplicationID : Constants.parseApplicationID, OTMClient.Constants.headerApiKey : Constants.apiKey]
+        taskForGetMethod(baseURL, parameters: parametrs, headers: headers) { (results, error) -> Void in
+            guard (error == nil) else {
+                complitionHandler(success: false, objectID: nil, error: error?.localizedDescription)
+                return
+            }
+            
+            var parsedResult: AnyObject!
+            do {
+                parsedResult = try NSJSONSerialization.JSONObjectWithData(results as! NSData, options: .AllowFragments)
+            } catch {
+                print("Could not parse the data as JSON: '\(results)'")
+            }
+            if let userData = parsedResult[OTMClient.JSONResponseKeys.results] {
+                    let data = userData![0] as! [String : AnyObject]
+                    let objectId = data[OTMClient.JSONResponseKeys.objectId] as! String
+                    complitionHandler(success: true, objectID: objectId, error: nil)
+            }
+            else {
+                complitionHandler(success: true, objectID: nil, error: nil)
+            }
+        }    
+    }
+    
     func postStudentLocation(user: OnTheMapUser, completionHandler: (objectId: String?, error: String?) -> Void) {
         let baseUrl = Constants.parseStudentLocationsHost
         
-        let headers = ["X-Parse-Application-Id" : Constants.parseApplicationID, "X-Parse-REST-API-Key" : Constants.apiKey, "Content-Type" : "application/json"]
+        let headers = [OTMClient.Constants.headerParseApplicationID : Constants.parseApplicationID, OTMClient.Constants.headerApiKey : Constants.apiKey, "Content-Type" : "application/json"]
         
         let body = NSMutableDictionary()
         body.setValue(user.uniqueKey, forKey: OTMClient.JSONResponseKeys.uniqueKey)
@@ -139,6 +166,54 @@ extension OTMClient {
             }
         }
     }
+    
+    func updateStudentLocation(user: OnTheMapUser, completionHandler: (success: Bool, error: String?) -> Void) {
+        let baseUrl = Constants.parseStudentLocationsHost + "/\(user.objectId!)"
+        
+        let headers = [OTMClient.Constants.headerParseApplicationID : Constants.parseApplicationID, OTMClient.Constants.headerApiKey : Constants.apiKey, "Content-Type" : "application/json"]
+        
+        let body = NSMutableDictionary()
+        body.setValue(user.uniqueKey, forKey: OTMClient.JSONResponseKeys.uniqueKey)
+        body.setValue(user.firstName, forKey: OTMClient.JSONResponseKeys.firstName)
+        body.setValue(user.lastName, forKey: OTMClient.JSONResponseKeys.lastName)
+        body.setValue(user.mapString, forKey: OTMClient.JSONResponseKeys.mapString)
+        body.setValue(user.mediaURL, forKey: OTMClient.JSONResponseKeys.mediaURL)
+        body.setValue(user.latitude, forKey: OTMClient.JSONResponseKeys.latitude)
+        body.setValue(user.longitude, forKey: OTMClient.JSONResponseKeys.longitude)
+        
+        let jsonData: NSData?
+        do {
+            jsonData = try NSJSONSerialization.dataWithJSONObject(body, options: NSJSONWritingOptions())
+        }
+        catch{
+            print("Serialization Error")
+            jsonData = nil
+            completionHandler(success: false, error: "Serialization Error")
+        }
+        
+        taskForPUTMethod(baseUrl, headers: headers, body: jsonData!) { (result, error) in
+            guard (error == nil) else {
+                completionHandler(success: false, error: error?.localizedDescription)
+                return
+            }
+            let jsonResult = OTMClient.parseJSON(result!)
+            if let _ = jsonResult[OTMClient.JSONResponseKeys.updatedAt]{
+                completionHandler(success: true, error: nil)
+            }
+            else {
+                completionHandler(success: false, error: "Invalid JSON")
+            }
+        }
+    }
+    
+    func deleteSession(completionHandler: (sussess: Bool, error: NSError?)-> Void) {
+        
+        let baseUrl = Constants.udacitySessionHost
+        taskForDELETEMethod(baseUrl){ (success, error) in
+            completionHandler(sussess: success, error: error)
+        }
+    }
+
     
     private func setUpBodySessionToken(logIn: String, password: String) -> NSData? {
         let creds : NSMutableDictionary = NSMutableDictionary()

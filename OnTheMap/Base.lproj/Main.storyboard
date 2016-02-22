@@ -168,6 +168,7 @@
                                             <constraint firstAttribute="height" constant="30" id="oSP-ca-eHj"/>
                                             <constraint firstAttribute="width" constant="300" id="vfU-jq-v1r"/>
                                         </constraints>
+                                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                         <textInputTraits key="textInputTraits"/>
                                         <variation key="default">
@@ -486,7 +487,7 @@
         <!--Log In View Controller-->
         <scene sceneID="kSF-Sa-LiY">
             <objects>
-                <viewController id="Qvi-mx-DBo" customClass="LogInViewController" customModule="OnTheMap" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController restorationIdentifier="logInVC" storyboardIdentifier="logInVC" id="Qvi-mx-DBo" customClass="LogInViewController" customModule="OnTheMap" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="YGi-Fm-blC"/>
                         <viewControllerLayoutGuide type="bottom" id="r6Y-6r-e62"/>

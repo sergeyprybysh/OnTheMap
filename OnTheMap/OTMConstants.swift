@@ -17,7 +17,9 @@ extension OTMClient {
 
         // MARK: API Key and App ID
         static let parseApplicationID = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
+        static let headerParseApplicationID = "X-Parse-Application-Id"
         static let apiKey = "QuWThTdiRmTux3YaDseUSEpUKo7aBYM737yKd4gY"
+        static let headerApiKey = "X-Parse-REST-API-Key"
         
         static let statusCodeError = "statusCode"
         static let messageError = "message"
@@ -27,6 +29,7 @@ extension OTMClient {
         static let sessionObject = "session"
         static let account = "account"
         static let accountKey = "key"
+        static let results = "results"
         
         //MARK: Student Locations JSON
         static let resultsStudentLocations = "results"

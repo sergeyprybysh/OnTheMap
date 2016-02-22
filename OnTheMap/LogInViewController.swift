@@ -64,7 +64,7 @@ class LogInViewController: UIViewController {
                     }
                     else if code >= 500 && code <= 599 {
                         dispatch_async(dispatch_get_main_queue(), {
-                        self.showAlertWithText("Try Again Later", message: "Networking Error")
+                        self.showAlertWithText("Try Again Later", message: "There was a problem to connect to the server")
                         })
                     }
                     else {

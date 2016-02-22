@@ -41,7 +41,10 @@ class TableViewController: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let student = studentLocations[indexPath.row]
         let url = NSURL(string: student.mediaURL)
-        UIApplication.sharedApplication().openURL(url!)
+        let isOpened = UIApplication.sharedApplication().openURL(url!)
+        if !isOpened {
+            showAlertWithText("Invalid URL", message: "\(url!) is invalid. Try to use format: http://host.com")
+        }
     }
     
     func refreshData() {
@@ -60,6 +63,12 @@ class TableViewController: UITableViewController {
                 })
             }
         }
+    }
+    
+    func showAlertWithText(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
+        self.presentViewController(alert, animated: true, completion: nil)
     }
 }
 

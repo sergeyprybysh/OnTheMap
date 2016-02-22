@@ -63,6 +63,7 @@ class OTMClient : NSObject {
         let url = NSURL(string: urlString)!
         
         let request = NSMutableURLRequest(URL: url)
+        request.HTTPMethod = "GET"
         
         for (key, value) in headers {
             request.addValue(value, forHTTPHeaderField: key)
@@ -88,9 +89,92 @@ class OTMClient : NSObject {
                 print("No data was returned by the request!")
                 return
             }
-          
             completionHandler(result: data, error: nil)
-
+        }
+        task.resume()
+        return task
+    }
+    
+    func taskForPUTMethod(urlArg: String, headers: [String: String], body: NSData, completionHandler: (result: AnyObject?, error: NSError?) -> Void) -> NSURLSessionDataTask {
+        
+        let urlString = urlArg
+        let url = NSURL(string: urlString)!
+        let request = NSMutableURLRequest(URL: url)
+        
+        request.HTTPMethod = "PUT"
+        for (key, value) in headers {
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+        request.HTTPBody = body
+        
+        let task = session.dataTaskWithRequest(request) { (data, response, downloadError) in
+            
+            guard (downloadError == nil) else {
+                print("There was an error in PUT + \(downloadError)")
+                return
+            }
+            
+            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
+                if let response = response as? NSHTTPURLResponse {
+                    print("Your request returned an invalid response! Status code: \(response.statusCode)!")
+                    completionHandler(result: nil, error: NSError(domain: "Network", code: 001, userInfo: ["statusCode" : response.statusCode]))
+                } else if let response = response {
+                    print("Your request returned an invalid response! Response: \(response)!")
+                } else {
+                    print("Your request returned an invalid response!")
+                }
+                return
+            }
+            guard let data = data else {
+                print("No data was returned by the request!")
+                return
+            }
+            completionHandler(result: data, error: nil)
+        }
+        task.resume()
+        return task
+    }
+    
+    func taskForDELETEMethod(urlArg: String, completionHandler:(success: Bool, error: NSError?) -> Void )-> NSURLSessionDataTask {
+        
+        let urlString = urlArg
+        let url = NSURL(string: urlString)!
+        
+        let request = NSMutableURLRequest(URL: url)
+        request.HTTPMethod = "DELETE"
+        
+        var xsrfCookie: NSHTTPCookie? = nil
+        let sharedCookieStorage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
+        for cookie in sharedCookieStorage.cookies! {
+            if cookie.name == "XSRF-TOKEN" { xsrfCookie = cookie }
+        }
+        if let xsrfCookie = xsrfCookie {
+            request.setValue(xsrfCookie.value, forHTTPHeaderField: "X-XSRF-TOKEN")
+        }
+        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+            
+            guard (error == nil) else {
+                print("There was an error in Delete + \(error)")
+                completionHandler(success: false, error: error)
+                return
+            }
+            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
+                if let response = response as? NSHTTPURLResponse {
+                    print("Your request returned an invalid response! Status code: \(response.statusCode)!")
+                } else if let response = response {
+                    print("Your request returned an invalid response! Response: \(response)!")
+                } else {
+                    print("Your request returned an invalid response!")
+                }
+                completionHandler(success: false, error: error)
+                return
+            }
+            guard let _ = data else {
+                print("No data was returned by the request!")
+                completionHandler(success: false, error: error)
+                return
+            }
+            completionHandler(success: true, error: nil)
         }
         task.resume()
         return task
@@ -119,6 +203,7 @@ class OTMClient : NSObject {
         }
         return parsedResult
     }
+    
     class func parseJSON(data: AnyObject) -> AnyObject {
         
         var parsedResult: AnyObject!
@@ -131,11 +216,9 @@ class OTMClient : NSObject {
     }
     
     class func sharedInstance() -> OTMClient {
-        
         struct Singleton {
             static var sharedInstance = OTMClient()
         }
-        
         return Singleton.sharedInstance
     }
     

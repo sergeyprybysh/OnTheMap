@@ -25,6 +25,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         refreshData()
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(true)
+        refreshData()
+    }
+    
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         let reuseId = "map_pin"
         var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(reuseId) as? MKPinAnnotationView
@@ -87,9 +92,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             }
             else {
                 dispatch_async(dispatch_get_main_queue(), {
-                    let alert = UIAlertController(title: error!, message: "Try again later", preferredStyle: UIAlertControllerStyle.Alert)
-                    alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
-                    self.presentViewController(alert, animated: true, completion: nil)
+                    self.showAlertWithText("Try again later", message: error!)
                 })
             }
         }
