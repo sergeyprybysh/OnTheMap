@@ -29,15 +29,13 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
     @IBOutlet weak var submitButton: UIButton!
     
     @IBOutlet weak var topView: UIView!
-    
-    let applicationDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-    
+        
     var locationName: String? = nil
     
     var lat: Double? = nil
     
     var long: Double? = nil
-    //TODO: impliment if/else for POST and PUT 
+
     @IBAction func tapSubmitButton(sender: AnyObject) {
         
         let text = linkTextField.text
@@ -46,24 +44,24 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
             return
         }
         
-        applicationDelegate.userOnTheMap.mapString = locationName!
-        applicationDelegate.userOnTheMap.mediaURL = text
-        applicationDelegate.userOnTheMap.latitude = lat!
-        applicationDelegate.userOnTheMap.longitude = long!
-        if applicationDelegate.userOnTheMap.objectId == nil {
-            OTMClient.sharedInstance().postStudentLocation(applicationDelegate.userOnTheMap) { (objectId, error) in
+        OTMClient.sharedInstance().userOnTheMap.mapString = locationName!
+        OTMClient.sharedInstance().userOnTheMap.mediaURL = text
+        OTMClient.sharedInstance().userOnTheMap.latitude = lat!
+        OTMClient.sharedInstance().userOnTheMap.longitude = long!
+        if OTMClient.sharedInstance().userOnTheMap.objectId == nil {
+            OTMClient.sharedInstance().postStudentLocation(OTMClient.sharedInstance().userOnTheMap) { (objectId, error) in
             guard error == nil else {
                 print(error)
                 return
             }
             dispatch_async(dispatch_get_main_queue(), {
-                self.applicationDelegate.userOnTheMap.objectId = objectId
+                OTMClient.sharedInstance().userOnTheMap.objectId = objectId
                 self.presentingViewController?.dismissViewControllerAnimated(true, completion: nil)
             })
           }
         }
         else {
-            OTMClient.sharedInstance().updateStudentLocation(applicationDelegate.userOnTheMap) { (success, error) in
+            OTMClient.sharedInstance().updateStudentLocation(OTMClient.sharedInstance().userOnTheMap) { (success, error) in
                 guard error == nil else {
                     print(error)
                     return

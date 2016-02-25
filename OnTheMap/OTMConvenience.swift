@@ -48,7 +48,7 @@ extension OTMClient {
         }
     }
     
-    func getUserDetails(user : OnTheMapUser, complitionHandler: (results: [String: AnyObject]?, error: String) -> Void){
+    func getUserDetails(user : OnTheMapUser, complitionHandler: (results: [String: AnyObject]?, error: NSError?) -> Void){
         
         let urlSrting = OTMClient.Constants.udacityUserURL + "/" + user.uniqueKey!
         let parameters = [String : String]()
@@ -57,7 +57,7 @@ extension OTMClient {
         var parsedJson: AnyObject!
         taskForGetMethod(urlSrting, parameters: parameters, headers: headers) { (results, error) -> Void in
             guard (error == nil) else {
-                complitionHandler(results: nil, error: (error?.description)!)
+                complitionHandler(results: nil, error: error)
                 return
             }
             parsedJson = OTMClient.parseJSONForUdacitySession(results!)
@@ -65,10 +65,10 @@ extension OTMClient {
             if let userObject = parsedJson["user"] as? NSDictionary {
                 data[OTMClient.JSONResponseKeys.firstName] = userObject["nickname"]
                 data[OTMClient.JSONResponseKeys.lastName] = userObject["last_name"]
-                complitionHandler(results: data, error: "No Error")
+                complitionHandler(results: data, error: nil)
             }
             else {
-                complitionHandler(results: nil, error: "Unable to parce Json response")
+                complitionHandler(results: nil, error: NSError(domain: "Parsing", code: 005, userInfo:  [NSLocalizedDescriptionKey: "Could not parse JSON response"]))
             }
         }
     }
@@ -101,13 +101,13 @@ extension OTMClient {
         }
     }
     
-    func queryingForStudentLocation(uniqueKey : String, complitionHandler : (success : Bool, objectID : String?, error: String?) -> Void) {
+    func queryingForStudentLocation(uniqueKey : String, complitionHandler : (success : Bool, objectID : String?, error: NSError?) -> Void) {
         let baseURL = Constants.parseStudentLocationsHost
         let parametrs = ["where" : "{\"uniqueKey\":\"\(uniqueKey)\"}"]
         let headers = [OTMClient.Constants.headerParseApplicationID : Constants.parseApplicationID, OTMClient.Constants.headerApiKey : Constants.apiKey]
         taskForGetMethod(baseURL, parameters: parametrs, headers: headers) { (results, error) -> Void in
             guard (error == nil) else {
-                complitionHandler(success: false, objectID: nil, error: error?.localizedDescription)
+                complitionHandler(success: false, objectID: nil, error: error)
                 return
             }
             
@@ -128,7 +128,7 @@ extension OTMClient {
         }    
     }
     
-    func postStudentLocation(user: OnTheMapUser, completionHandler: (objectId: String?, error: String?) -> Void) {
+    func postStudentLocation(user: OnTheMapUser, completionHandler: (objectId: String?, error: NSError?) -> Void) {
         let baseUrl = Constants.parseStudentLocationsHost
         
         let headers = [OTMClient.Constants.headerParseApplicationID : Constants.parseApplicationID, OTMClient.Constants.headerApiKey : Constants.apiKey, "Content-Type" : "application/json"]
@@ -149,12 +149,12 @@ extension OTMClient {
         catch{
             print("Serialization Error")
             jsonData = nil
-            completionHandler(objectId: nil, error: "Serialization Error")
+            completionHandler(objectId: nil, error: NSError(domain: "Parsing", code: 005, userInfo:  [NSLocalizedDescriptionKey: "Serialization Error"]))
         }
         
         taskForPOSTMethod(baseUrl, headers: headers, body: jsonData!) { (result, error) in
             guard (error == nil) else {
-                completionHandler(objectId: nil, error: error?.description)
+                completionHandler(objectId: nil, error: error)
                 return
             }
             let jsonResult = OTMClient.parseJSON(result!)
@@ -162,12 +162,12 @@ extension OTMClient {
                 completionHandler(objectId: objectID as? String, error: nil)
             }
             else {
-                completionHandler(objectId: nil, error: "Failed to parce ObjectId")
+                completionHandler(objectId: nil, error: NSError(domain: "Parsing", code: 005, userInfo:  [NSLocalizedDescriptionKey: "Could not parse JSON response"]))
             }
         }
     }
     
-    func updateStudentLocation(user: OnTheMapUser, completionHandler: (success: Bool, error: String?) -> Void) {
+    func updateStudentLocation(user: OnTheMapUser, completionHandler: (success: Bool, error: NSError?) -> Void) {
         let baseUrl = Constants.parseStudentLocationsHost + "/\(user.objectId!)"
         
         let headers = [OTMClient.Constants.headerParseApplicationID : Constants.parseApplicationID, OTMClient.Constants.headerApiKey : Constants.apiKey, "Content-Type" : "application/json"]
@@ -188,12 +188,12 @@ extension OTMClient {
         catch{
             print("Serialization Error")
             jsonData = nil
-            completionHandler(success: false, error: "Serialization Error")
+            completionHandler(success: false, error: NSError(domain: "Parsing", code: 005, userInfo:  [NSLocalizedDescriptionKey: "Serialization Error"]))
         }
         
         taskForPUTMethod(baseUrl, headers: headers, body: jsonData!) { (result, error) in
             guard (error == nil) else {
-                completionHandler(success: false, error: error?.localizedDescription)
+                completionHandler(success: false, error: error)
                 return
             }
             let jsonResult = OTMClient.parseJSON(result!)
@@ -201,7 +201,7 @@ extension OTMClient {
                 completionHandler(success: true, error: nil)
             }
             else {
-                completionHandler(success: false, error: "Invalid JSON")
+                completionHandler(success: false, error: NSError(domain: "Parsing", code: 005, userInfo:  [NSLocalizedDescriptionKey: "Could not parse JSON Response"]))
             }
         }
     }

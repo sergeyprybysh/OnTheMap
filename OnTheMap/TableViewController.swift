@@ -10,14 +10,8 @@ import UIKit
 
 class TableViewController: UITableViewController {
     
-    var studentLocations: [StudentLocation]!
-    
-    let applicationDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        studentLocations = applicationDelegate.studentArray
         refreshData()
     }
     
@@ -27,23 +21,27 @@ class TableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return studentLocations.count
+        return OTMClient.sharedInstance().studentLocations.count
     }
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell: OTMTableViewCell = tableView.dequeueReusableCellWithIdentifier("table_view_cell") as! OTMTableViewCell
         let pinImage = UIImage(named: "pin")
-        let student = studentLocations[indexPath.row]
+        let student = OTMClient.sharedInstance().studentLocations[indexPath.row]
         cell.studentsName.text = (student.firstName + " " + student.lastName)
         cell.imageView?.image = pinImage
         return cell
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let student = studentLocations[indexPath.row]
-        let url = NSURL(string: student.mediaURL)
-        let isOpened = UIApplication.sharedApplication().openURL(url!)
-        if !isOpened {
-            showAlertWithText("Invalid URL", message: "\(url!) is invalid. Try to use format: http://host.com")
+        let student = OTMClient.sharedInstance().studentLocations[indexPath.row]
+        if let url = NSURL(string: student.mediaURL) {
+            let isOpened = UIApplication.sharedApplication().openURL(url)
+            if !isOpened {
+            showAlertWithText("Invalid URL", message: "\(url) is invalid. Try to use format: http://host.com")
+           }
+        }
+        else{
+            showAlertWithText("Invalid URL", message: "This user did not provide any URL")
         }
     }
     
@@ -51,7 +49,7 @@ class TableViewController: UITableViewController {
         OTMClient.sharedInstance().getStudentLocations(){ (studentLocations, error) in
             if let locationsArray = studentLocations  {
                 dispatch_async(dispatch_get_main_queue(), {
-                    self.studentLocations = locationsArray
+                    OTMClient.sharedInstance().studentLocations = locationsArray
                     self.tableView.reloadData()
                 })
             }

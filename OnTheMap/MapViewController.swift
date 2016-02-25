@@ -14,11 +14,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
    
     @IBOutlet weak var mapView: MKMapView!
     
-    var studentLocations: [StudentLocation]?
-    
-    let applicationDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         mapView.delegate = self
@@ -60,8 +55,8 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     func updateAnnotations() {
         var annotations = [MKPointAnnotation]()
-        
-        for student in studentLocations! {
+        let studentLocations = OTMClient.sharedInstance().studentLocations
+        for student in studentLocations {
             
             let lat = CLLocationDegrees(student.latitude)
             let long = CLLocationDegrees(student.longitude)
@@ -91,8 +86,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             }
             if let locationsArray = studentLocations  {
                 dispatch_async(dispatch_get_main_queue(), {
-                    self.studentLocations = locationsArray
-                    self.applicationDelegate.studentArray = locationsArray
+                    OTMClient.sharedInstance().studentLocations = locationsArray
                     self.updateAnnotations()
                  })
             }

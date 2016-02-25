@@ -10,9 +10,7 @@ import Foundation
 import UIKit
 
 class TabBarController: UITabBarController {
-    
-    let applicationDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setUpViews()
@@ -72,18 +70,18 @@ class TabBarController: UITabBarController {
     }
     
     func pinAction() {
-        if applicationDelegate.userOnTheMap.objectId != nil {
+        if OTMClient.sharedInstance().userOnTheMap.objectId != nil {
             showAlertWithText("Overwrite Location?", message: "Would you like to overwrite your current location?")
         }
         else {
-            OTMClient.sharedInstance().queryingForStudentLocation(applicationDelegate.userOnTheMap.uniqueKey!){
+            OTMClient.sharedInstance().queryingForStudentLocation(OTMClient.sharedInstance().userOnTheMap.uniqueKey!){
                 (success, objectId, error) in
                 guard (error == nil) else {
                     print(error)
                     return
                 }
                 if let id = objectId {
-                    self.applicationDelegate.userOnTheMap.objectId = id
+                    OTMClient.sharedInstance().userOnTheMap.objectId = id
                     dispatch_async(dispatch_get_main_queue(), {
                     self.showAlertWithText("Overwrite Location?", message: "Would you like to overwrite your current location?")
                     })

@@ -16,10 +16,7 @@ class LogInViewController: UIViewController {
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var signUpTextField: UILabel!
     @IBOutlet weak var signUpButton: UIButton!
-    
-    let application = UIApplication.sharedApplication()    
-    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpSubviews()
@@ -45,12 +42,12 @@ class LogInViewController: UIViewController {
         
         OTMClient.sharedInstance().getSessionToken(logIn!, password: password!){(success, data, error) in
             if success {
-                self.appDelegate.userOnTheMap.uniqueKey = data![OTMClient.JSONResponseKeys.accountKey] as? String
-                self.appDelegate.sessionID = data![OTMClient.JSONResponseKeys.sessionId] as? String
-                OTMClient.sharedInstance().getUserDetails(self.appDelegate.userOnTheMap) { (results, error) in
+                OTMClient.sharedInstance().userOnTheMap.uniqueKey = data![OTMClient.JSONResponseKeys.accountKey] as? String
+                OTMClient.sharedInstance().sessionID = data![OTMClient.JSONResponseKeys.sessionId] as? String
+                OTMClient.sharedInstance().getUserDetails(OTMClient.sharedInstance().userOnTheMap) { (results, error) in
                     if let data = results {
-                        self.appDelegate.userOnTheMap.firstName = data[OTMClient.JSONResponseKeys.firstName] as? String
-                        self.appDelegate.userOnTheMap.lastName = data[OTMClient.JSONResponseKeys.lastName] as? String
+                        OTMClient.sharedInstance().userOnTheMap.firstName = data[OTMClient.JSONResponseKeys.firstName] as? String
+                        OTMClient.sharedInstance().userOnTheMap.lastName = data[OTMClient.JSONResponseKeys.lastName] as? String
                         dispatch_async(dispatch_get_main_queue(),{
                         self.launchMapViewController()
                             activityIndicator.stopAnimating()
@@ -92,7 +89,7 @@ class LogInViewController: UIViewController {
     
     @IBAction func tapSignUpButton(sender: AnyObject) {
         let targetURL = NSURL(string: OTMClient.Constants.udacitySignInURL)
-        application.openURL(targetURL!)
+        UIApplication.sharedApplication().openURL(targetURL!)
     }
     
     func setUpSubviews() {
