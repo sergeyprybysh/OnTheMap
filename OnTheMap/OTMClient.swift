@@ -33,22 +33,22 @@ class OTMClient : NSObject {
             
             guard (downloadError == nil) else {
                 print("There was an error in POST + \(downloadError)")
+                completionHandler(result: nil, error: NSError(domain: "Network", code: 001, userInfo: nil))
                 return
-            }
-            
+            }            
             guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
                 if let response = response as? NSHTTPURLResponse {
-                    print("Your request returned an invalid response! Status code: \(response.statusCode)!")
-                    completionHandler(result: nil, error: NSError(domain: "Network", code: 001, userInfo: ["statusCode" : response.statusCode]))
+                    completionHandler(result: nil, error: NSError(domain: "Network", code: 002, userInfo: ["statusCode" : response.statusCode]))
                 } else if let response = response {
                     print("Your request returned an invalid response! Response: \(response)!")
                 } else {
                     print("Your request returned an invalid response!")
                 }
+                completionHandler(result: nil, error: NSError(domain: "Network", code: 003, userInfo: ["message" : "Your request returned an invalid response!"]))
                 return
             }
             guard let data = data else {
-                print("No data was returned by the request!")
+                completionHandler(result: nil, error: NSError(domain: "Network", code: 003, userInfo: ["message" : "No data was returned by the request!"]))
                 return
             }
             completionHandler(result: data, error: nil)
@@ -57,7 +57,7 @@ class OTMClient : NSObject {
        return task
     }
     
-    func taskForGetMethod(urlArg: String, parameters: [String : AnyObject], headers: [String : String], completionHandler:(result: AnyObject!, error: NSError?) -> Void )-> NSURLSessionDataTask {
+    func taskForGetMethod(urlArg: String, parameters: [String : AnyObject], headers: [String : String], completionHandler:(result: AnyObject?, error: NSError?) -> Void )-> NSURLSessionDataTask {
         
         let urlString = urlArg + OTMClient.escapedParameters(parameters)
         let url = NSURL(string: urlString)!
@@ -72,7 +72,7 @@ class OTMClient : NSObject {
         let task = session.dataTaskWithRequest(request) { (data, response, error) in
             
             guard (error == nil) else {
-                print("There was an error in POST + \(error)")
+                completionHandler(result: nil, error: error)
                 return
             }
             guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
@@ -83,10 +83,12 @@ class OTMClient : NSObject {
                 } else {
                     print("Your request returned an invalid response!")
                 }
+                completionHandler(result: nil, error:  NSError(domain: "Network", code: 003, userInfo: [NSLocalizedDescriptionKey : "Your request returned an invalid response!"]))
                 return
             }
             guard let data = data else {
                 print("No data was returned by the request!")
+                completionHandler(result: nil, error:  NSError(domain: "Network", code: 003, userInfo: [NSLocalizedDescriptionKey : "Your request returned no data!"]))
                 return
             }
             completionHandler(result: data, error: nil)
@@ -107,26 +109,28 @@ class OTMClient : NSObject {
         }
         request.HTTPBody = body
         
-        let task = session.dataTaskWithRequest(request) { (data, response, downloadError) in
+        let task = session.dataTaskWithRequest(request) { (data, response, error) in
             
-            guard (downloadError == nil) else {
-                print("There was an error in PUT + \(downloadError)")
+            guard (error == nil) else {
+                print("There was an error in PUT + \(error)")
+                completionHandler(result: nil, error: error)
                 return
             }
             
             guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
                 if let response = response as? NSHTTPURLResponse {
                     print("Your request returned an invalid response! Status code: \(response.statusCode)!")
-                    completionHandler(result: nil, error: NSError(domain: "Network", code: 001, userInfo: ["statusCode" : response.statusCode]))
                 } else if let response = response {
                     print("Your request returned an invalid response! Response: \(response)!")
                 } else {
                     print("Your request returned an invalid response!")
                 }
+                completionHandler(result: nil, error:  NSError(domain: "Network", code: 003, userInfo: [NSLocalizedDescriptionKey : "Your request returned an invalid response!"]))
                 return
             }
             guard let data = data else {
                 print("No data was returned by the request!")
+                completionHandler(result: nil, error:  NSError(domain: "Network", code: 003, userInfo: [NSLocalizedDescriptionKey : "Your request returned no data!"]))
                 return
             }
             completionHandler(result: data, error: nil)
@@ -166,7 +170,7 @@ class OTMClient : NSObject {
                 } else {
                     print("Your request returned an invalid response!")
                 }
-                completionHandler(success: false, error: error)
+                completionHandler(success: false, error:  NSError(domain: "Network", code: 003, userInfo: [NSLocalizedDescriptionKey : "Your request returned an invalid response!"]))
                 return
             }
             guard let _ = data else {
@@ -174,7 +178,7 @@ class OTMClient : NSObject {
                 completionHandler(success: false, error: error)
                 return
             }
-            completionHandler(success: true, error: nil)
+            completionHandler(success: true, error:  NSError(domain: "Network", code: 003, userInfo: [NSLocalizedDescriptionKey : "Your request returned no data!"]))
         }
         task.resume()
         return task

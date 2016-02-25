@@ -51,5 +51,10 @@ extension OTMClient {
         static let email = "Email"
         static let password = "Password"
     }
+    
+    struct AlertMessages {
+        static let networkAlertTitle = "Networking Error"
+        static let networkAlertMessage = "Please, check your network connection and try again"
+    }
             
 }

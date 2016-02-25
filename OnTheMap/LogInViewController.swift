@@ -17,8 +17,7 @@ class LogInViewController: UIViewController {
     @IBOutlet weak var signUpTextField: UILabel!
     @IBOutlet weak var signUpButton: UIButton!
     
-    let application = UIApplication.sharedApplication()
-    
+    let application = UIApplication.sharedApplication()    
     let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
     override func viewDidLoad() {
@@ -39,6 +38,11 @@ class LogInViewController: UIViewController {
             return
         }
         
+        let activityIndicator = UIActivityIndicatorView.init(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
+        activityIndicator.center = view.center
+        activityIndicator.startAnimating()
+        view.addSubview(activityIndicator)
+        
         OTMClient.sharedInstance().getSessionToken(logIn!, password: password!){(success, data, error) in
             if success {
                 self.appDelegate.userOnTheMap.uniqueKey = data![OTMClient.JSONResponseKeys.accountKey] as? String
@@ -47,33 +51,41 @@ class LogInViewController: UIViewController {
                     if let data = results {
                         self.appDelegate.userOnTheMap.firstName = data[OTMClient.JSONResponseKeys.firstName] as? String
                         self.appDelegate.userOnTheMap.lastName = data[OTMClient.JSONResponseKeys.lastName] as? String
+                        dispatch_async(dispatch_get_main_queue(),{
                         self.launchMapViewController()
+                            activityIndicator.stopAnimating()
+                        })
                     }
                     else {
-                        print(error)
+                        dispatch_async(dispatch_get_main_queue(),{
+                            activityIndicator.stopAnimating()
+                            self.showAlertWithText(OTMClient.AlertMessages.networkAlertTitle, message: OTMClient.AlertMessages.networkAlertMessage)
+                            print(error)
+                        })
                     }
                 }
             }
             else {
-                if let statusCode = error![OTMClient.Constants.statusCodeError] {
-                    let code = statusCode as! Int
-                    if code >= 400 && code <= 499 {
-                        dispatch_async(dispatch_get_main_queue(), {
-                        self.showAlertWithText("Invalid Credentials", message: "Your Username or Password is invalid")
-                        })
+                dispatch_async(dispatch_get_main_queue(), {
+                    activityIndicator.stopAnimating()
+                    
+                    if error?.code == 001 {
+                        self.showAlertWithText(OTMClient.AlertMessages.networkAlertTitle, message: OTMClient.AlertMessages.networkAlertMessage)
                     }
-                    else if code >= 500 && code <= 599 {
-                        dispatch_async(dispatch_get_main_queue(), {
-                        self.showAlertWithText("Try Again Later", message: "There was a problem to connect to the server")
-                        })
+                    else if error?.code == 002 {
+                        let statusCode = error!.userInfo[OTMClient.Constants.statusCodeError] as! Int
+                        if statusCode >= 400 && statusCode <= 499 {
+                                self.showAlertWithText("Invalid Credentials", message: "Your Username or Password is invalid")
+                        }
+                        else {
+                            self.showAlertWithText(OTMClient.AlertMessages.networkAlertTitle, message: OTMClient.AlertMessages.networkAlertMessage)
+                        }
                     }
                     else {
-                        print(error)
-                    }                    
-                }
-                else{
-                    print(error)
-                }
+                        print(error?.userInfo["message"])
+                        self.showAlertWithText(OTMClient.AlertMessages.networkAlertTitle, message: OTMClient.AlertMessages.networkAlertMessage)
+                    }
+                })
             }
         }
     }
@@ -105,10 +117,8 @@ class LogInViewController: UIViewController {
     }
     
     func launchMapViewController() {
-        dispatch_async(dispatch_get_main_queue(), {
             let controller = self.storyboard!.instantiateViewControllerWithIdentifier("main_nav_controller") as! UINavigationController
             self.presentViewController(controller, animated: true, completion: nil)
-        })
     }
     
     func showAlertWithText(title: String, message: String) {

@@ -21,16 +21,16 @@ struct StudentLocation {
     var uniqueKey : String
     var updatedAt : String
     
-    init (firstName : String, lastName  : String, createdAt : String, mapString : String, mediaURL  : String, objectId  : String, uniqueKey : String, updatedAt : String, latitude  : Double, longitude : Double) {
-        self.firstName = firstName
-        self.lastName = lastName
-        self.createdAt = createdAt
-        self.mapString = mapString
-        self.mediaURL = mediaURL
-        self.objectId = objectId
-        self.uniqueKey = uniqueKey
-        self.updatedAt = updatedAt
-        self.latitude = latitude
-        self.longitude = longitude
+    init (userDictionary: [String : AnyObject]) {
+        self.firstName = userDictionary["firstName"] as! String!
+        self.lastName = userDictionary["lastName"] as! String!
+        self.createdAt = userDictionary["createdAt"] as! String!
+        self.mapString = userDictionary["mapString"] as! String!
+        self.mediaURL = userDictionary["mediaURL"] as! String!
+        self.objectId = userDictionary["objectId"] as! String!
+        self.uniqueKey = userDictionary["uniqueKey"] as! String!
+        self.updatedAt = userDictionary["updatedAt"] as! String!
+        self.latitude = userDictionary["latitude"] as! Double!
+        self.longitude = userDictionary["longitude"] as! Double!
     }
 }

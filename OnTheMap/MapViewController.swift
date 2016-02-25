@@ -83,17 +83,18 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     func refreshData() {
         OTMClient.sharedInstance().getStudentLocations(){ (studentLocations, error) in
+            guard (error == nil) else {
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.showAlertWithText("Try again later", message: (error?.localizedDescription)!)
+                })
+                return
+            }
             if let locationsArray = studentLocations  {
                 dispatch_async(dispatch_get_main_queue(), {
                     self.studentLocations = locationsArray
                     self.applicationDelegate.studentArray = locationsArray
                     self.updateAnnotations()
                  })
-            }
-            else {
-                dispatch_async(dispatch_get_main_queue(), {
-                    self.showAlertWithText("Try again later", message: error!)
-                })
             }
         }
     }

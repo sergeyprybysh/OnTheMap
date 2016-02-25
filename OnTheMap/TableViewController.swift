@@ -57,7 +57,7 @@ class TableViewController: UITableViewController {
             }
             else {
                 dispatch_async(dispatch_get_main_queue(), {
-                    let alert = UIAlertController(title: error!, message: "Try again later", preferredStyle: UIAlertControllerStyle.Alert)
+                    let alert = UIAlertController(title: error!.localizedDescription, message: "Try again later", preferredStyle: UIAlertControllerStyle.Alert)
                     alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
                     self.presentViewController(alert, animated: true, completion: nil)
                 })

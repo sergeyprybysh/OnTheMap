@@ -10,14 +10,14 @@ import Foundation
 
 extension OTMClient {
         
-    func getSessionToken(logIn: String, password: String, completionHandler: (sussess: Bool, results: [String : AnyObject]?, error: [String : AnyObject]?)-> Void){
+    func getSessionToken(logIn: String, password: String, completionHandler: (sussess: Bool, results: [String : AnyObject]?, error: NSError?)-> Void){
         let baseURL = Constants.udacitySessionHost
         let body = setUpBodySessionToken(logIn, password: password)
         let headers = ["Accept" : "application/json", "Content-Type" : "application/json"]
         var parsedJson: AnyObject!
         taskForPOSTMethod(baseURL,headers: headers, body: body!) { (result, error) -> Void in
             guard (error == nil) else {
-                completionHandler(sussess: false, results: nil, error: [OTMClient.Constants.statusCodeError : (error?.userInfo[OTMClient.Constants.statusCodeError])!])
+                completionHandler(sussess: false, results: nil, error: error)
                 return
             }
             parsedJson = OTMClient.parseJSONForUdacitySession(result!)
@@ -27,22 +27,22 @@ extension OTMClient {
                     data = [OTMClient.JSONResponseKeys.sessionId : sID!]
                 }
                 else{
-                    completionHandler(sussess: false, results:  nil, error: [OTMClient.Constants.messageError : "Failed to parce Session Id"])
+                    completionHandler(sussess: false, results:  nil, error: NSError(domain: "Network", code: 003, userInfo: ["message" : "Your request returned an invalid response!"]))
                 }
             }
             else{
-                completionHandler(sussess: false, results: nil, error: [OTMClient.Constants.messageError : "Failed to parce Session JSON"])
+                completionHandler(sussess: false, results: nil, error: NSError(domain: "Network", code: 003, userInfo: ["message" : "Failed to parce Session JSON"]))
             }
             if let accountJson = parsedJson[OTMClient.JSONResponseKeys.account]{
                 if let accID = accountJson![OTMClient.JSONResponseKeys.accountKey] {
                     data[OTMClient.JSONResponseKeys.accountKey] = accID!
                 }
                 else{
-                    completionHandler(sussess: false, results:  nil, error: [OTMClient.Constants.messageError : "Failed to parce Account Key"])
+                    completionHandler(sussess: false, results:  nil, error: NSError(domain: "Network", code: 003, userInfo: ["message" : "Failed to parce Account Id"]))
                 }
             }
             else{
-                completionHandler(sussess: false, results: nil, error: [OTMClient.Constants.messageError : "Failed to parce Account JSON"])
+                completionHandler(sussess: false, results: nil, error: NSError(domain: "Network", code: 003, userInfo: ["message" : "Failed to parce Account JSON"]))
             }
             completionHandler(sussess: true, results: data, error: nil)
         }
@@ -60,7 +60,7 @@ extension OTMClient {
                 complitionHandler(results: nil, error: (error?.description)!)
                 return
             }
-            parsedJson = OTMClient.parseJSONForUdacitySession(results)
+            parsedJson = OTMClient.parseJSONForUdacitySession(results!)
             var data = [String: AnyObject]()
             if let userObject = parsedJson["user"] as? NSDictionary {
                 data[OTMClient.JSONResponseKeys.firstName] = userObject["nickname"]
@@ -73,15 +73,15 @@ extension OTMClient {
         }
     }
     
-    func getStudentLocations(completionHandler: (locations: [StudentLocation]?, error: String?) -> Void) {
+    func getStudentLocations(completionHandler: (locations: [StudentLocation]?, error: NSError?) -> Void) {
         
         let baseURL = Constants.parseStudentLocationsHost
-        let parametrs = ["limit" : "100"]
+        let parametrs = ["limit" : "100", "order": "-updatedAt"]
         let headers = [OTMClient.Constants.headerParseApplicationID : Constants.parseApplicationID, OTMClient.Constants.headerApiKey : Constants.apiKey]
         
         taskForGetMethod(baseURL, parameters: parametrs, headers: headers) { (results, error) -> Void in
             guard (error == nil) else {
-                completionHandler(locations: nil, error: error?.localizedDescription)
+                completionHandler(locations: nil, error: error)
                 return
             }
             var parsedResult: AnyObject!
@@ -96,7 +96,7 @@ extension OTMClient {
                 completionHandler(locations: studentLocations, error: nil)
             }
             else {
-                completionHandler(locations: nil, error: "Failed to get Student Locations")
+                completionHandler(locations: nil, error: NSError(domain: "Parsing", code: 005, userInfo:  [NSLocalizedDescriptionKey: "Could not parse user location data"]))
             }
         }
     }
@@ -237,16 +237,7 @@ extension OTMClient {
         var studentLocations = [StudentLocation]()
         
         for studentObject in data {
-            let location = StudentLocation(firstName: studentObject[OTMClient.JSONResponseKeys.firstName] as! String,
-                lastName : studentObject[OTMClient.JSONResponseKeys.lastName] as! String,
-                createdAt : studentObject[OTMClient.JSONResponseKeys.createdAt] as! String,
-                mapString : studentObject[OTMClient.JSONResponseKeys.mapString] as! String,
-                mediaURL : studentObject[OTMClient.JSONResponseKeys.mediaURL] as! String,
-                objectId : studentObject[OTMClient.JSONResponseKeys.objectId] as! String,
-                uniqueKey : studentObject[OTMClient.JSONResponseKeys.uniqueKey] as! String,
-                updatedAt : studentObject[OTMClient.JSONResponseKeys.updatedAt] as! String,
-                latitude : studentObject[OTMClient.JSONResponseKeys.latitude] as! Double,
-                longitude : studentObject[OTMClient.JSONResponseKeys.longitude] as! Double)
+            let location = StudentLocation(userDictionary: studentObject)
             studentLocations.append(location)
         }
         return studentLocations
