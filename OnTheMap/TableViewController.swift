@@ -21,19 +21,19 @@ class TableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return OTMClient.sharedInstance().studentLocations.count
+        return StudentLocationData.studentLocations.count
     }
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell: OTMTableViewCell = tableView.dequeueReusableCellWithIdentifier("table_view_cell") as! OTMTableViewCell
         let pinImage = UIImage(named: "pin")
-        let student = OTMClient.sharedInstance().studentLocations[indexPath.row]
+        let student = StudentLocationData.studentLocations[indexPath.row]
         cell.studentsName.text = (student.firstName + " " + student.lastName)
         cell.imageView?.image = pinImage
         return cell
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let student = OTMClient.sharedInstance().studentLocations[indexPath.row]
+        let student = StudentLocationData.studentLocations[indexPath.row]
         if let url = NSURL(string: student.mediaURL) {
             let isOpened = UIApplication.sharedApplication().openURL(url)
             if !isOpened {
@@ -49,7 +49,7 @@ class TableViewController: UITableViewController {
         OTMClient.sharedInstance().getStudentLocations(){ (studentLocations, error) in
             if let locationsArray = studentLocations  {
                 dispatch_async(dispatch_get_main_queue(), {
-                    OTMClient.sharedInstance().studentLocations = locationsArray
+                    StudentLocationData.studentLocations = locationsArray
                     self.tableView.reloadData()
                 })
             }

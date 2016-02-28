@@ -9,17 +9,32 @@
 import UIKit
 import Foundation
 
-class LogInViewController: UIViewController {
+class LogInViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var logInButton: UIButton!
     @IBOutlet weak var logInTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var signUpTextField: UILabel!
     @IBOutlet weak var signUpButton: UIButton!
+    
+    var viewMoovedFlag : Bool = false
         
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpSubviews()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(true)
+        //view.transform = CGAffineTransformTranslate(view.transform, 0.0, -300.0)
+        subscribeToKeyboardNotifications()
+        subscribeToKeyboardHideNotifications()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(true)
+        unsubscribeFromKeyboardNotifications()
+        unsubscribeFromKeyboardHideNotifications()
     }
     
        @IBAction func tapLogInButton(sender: AnyObject) {
@@ -98,9 +113,11 @@ class LogInViewController: UIViewController {
         logInButton.clipsToBounds = true
         
         let paddingLogIn = UIView(frame: CGRectMake(0, 0, 15, logInTextField.frame.size.height))
+        logInTextField.delegate = self
         logInTextField.leftView = paddingLogIn
         logInTextField.leftViewMode = UITextFieldViewMode .Always
         let paddingPassword = UIView(frame: CGRectMake(0, 0, 15, passwordTextField.frame.height))
+        passwordTextField.delegate = self
         passwordTextField.leftView = paddingPassword
         passwordTextField.leftViewMode = UITextFieldViewMode .Always
         
@@ -122,5 +139,38 @@ class LogInViewController: UIViewController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
         self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func keyboardWillShow(notification: NSNotification){
+        if logInTextField.isFirstResponder() || passwordTextField.isFirstResponder(){
+            if !viewMoovedFlag {
+            view.frame.origin.y -= 40
+            viewMoovedFlag = true
+            }
+        }
+    }
+    func subscribeToKeyboardNotifications(){
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillShow:", name: UIKeyboardWillShowNotification, object: nil)
+    }
+    func unsubscribeFromKeyboardNotifications(){
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillShowNotification, object: nil)
+    }
+    func subscribeToKeyboardHideNotifications(){
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "keyboardWillHide:", name: UIKeyboardWillHideNotification, object: nil)
+    }
+    func unsubscribeFromKeyboardHideNotifications(){
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIKeyboardWillHideNotification, object: nil)
+    }
+    
+    func keyboardWillHide(notification: NSNotification){
+        if logInTextField.isFirstResponder() || passwordTextField.isFirstResponder() {
+            view.frame.origin.y = 0
+            viewMoovedFlag = false
+        }
     }
 }

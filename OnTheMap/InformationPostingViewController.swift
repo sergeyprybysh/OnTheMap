@@ -51,6 +51,9 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
         if OTMClient.sharedInstance().userOnTheMap.objectId == nil {
             OTMClient.sharedInstance().postStudentLocation(OTMClient.sharedInstance().userOnTheMap) { (objectId, error) in
             guard error == nil else {
+                dispatch_async(dispatch_get_main_queue(), {
+                self.showAlertWithText(OTMClient.AlertMessages.networkAlertTitle, message: OTMClient.AlertMessages.networkAlertMessage)
+                    })
                 print(error)
                 return
             }
@@ -63,6 +66,9 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
         else {
             OTMClient.sharedInstance().updateStudentLocation(OTMClient.sharedInstance().userOnTheMap) { (success, error) in
                 guard error == nil else {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        self.showAlertWithText(OTMClient.AlertMessages.networkAlertTitle, message: OTMClient.AlertMessages.networkAlertMessage)
+                    })
                     print(error)
                     return
                 }
@@ -81,15 +87,22 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
             return
         }
         
+        let activityIndicator = UIActivityIndicatorView.init(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
+        activityIndicator.center = view.center
+        activityIndicator.startAnimating()
+        view.addSubview(activityIndicator)
+        
         let geocoder = CLGeocoder()
         geocoder.geocodeAddressString(text!) { (placemark, error) in
             guard error == nil else {
                 dispatch_async(dispatch_get_main_queue(), {
-                self.showAlertWithText("Try Again", message: "Unable to get location")})
+                self.showAlertWithText("Try Again", message: "Unable to get location")
+                activityIndicator.stopAnimating() })
                 return
             }
             self.setUpMap(placemark!)
             self.displayMapMode()
+            activityIndicator.stopAnimating()
         }
     }
     
@@ -136,7 +149,9 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
         submitButton.backgroundColor = UIColor.whiteColor()
         setButtonCorner(submitButton)
         
+        locationTextField.delegate = self
         locationTextField.attributedPlaceholder = NSAttributedString(string: "Enter Your Location Here", attributes: [NSForegroundColorAttributeName:UIColor.whiteColor()])
+        linkTextField.delegate = self
         linkTextField.attributedPlaceholder = NSAttributedString(string: "Enter a Link to Share Here", attributes: [NSForegroundColorAttributeName:UIColor.whiteColor()])
     }
     
@@ -170,6 +185,11 @@ class InformationPostingViewController: UIViewController, UITextFieldDelegate, M
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
         self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    func textFieldShouldReturn(textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
 }
 

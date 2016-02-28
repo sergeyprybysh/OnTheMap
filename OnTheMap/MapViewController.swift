@@ -55,7 +55,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     func updateAnnotations() {
         var annotations = [MKPointAnnotation]()
-        let studentLocations = OTMClient.sharedInstance().studentLocations
+        let studentLocations = StudentLocationData.studentLocations
         for student in studentLocations {
             
             let lat = CLLocationDegrees(student.latitude)
@@ -86,7 +86,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             }
             if let locationsArray = studentLocations  {
                 dispatch_async(dispatch_get_main_queue(), {
-                    OTMClient.sharedInstance().studentLocations = locationsArray
+                    StudentLocationData.studentLocations = locationsArray
                     self.updateAnnotations()
                  })
             }

@@ -9,9 +9,7 @@
 import Foundation
 
 class OTMClient : NSObject {
-    
-    var studentLocations = [StudentLocation]()
-    
+        
     var userOnTheMap = OnTheMapUser()
     
     var sessionID: String? = nil

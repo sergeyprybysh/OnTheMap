@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A5501E5A1C839D1F005E5124 /* StudentLocationData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5501E591C839D1F005E5124 /* StudentLocationData.swift */; };
 		A550DDC01C5D764500FA2C77 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A550DDBF1C5D764500FA2C77 /* TabBarController.swift */; };
 		A55132441C1D58EC00AB40D0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55132431C1D58EC00AB40D0 /* AppDelegate.swift */; };
 		A55132461C1D58EC00AB40D0 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55132451C1D58EC00AB40D0 /* MapViewController.swift */; };
@@ -44,6 +45,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A5501E591C839D1F005E5124 /* StudentLocationData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StudentLocationData.swift; sourceTree = "<group>"; };
 		A550DDBF1C5D764500FA2C77 /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		A55132401C1D58EC00AB40D0 /* OnTheMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OnTheMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A55132431C1D58EC00AB40D0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -183,6 +185,7 @@
 			children = (
 				A5B63FDA1C54A98600412B89 /* StudentLocation.swift */,
 				A5E1A2171C6C56FA00238291 /* OnTheMapUser.swift */,
+				A5501E591C839D1F005E5124 /* StudentLocationData.swift */,
 			);
 			name = OTMModal;
 			sourceTree = "<group>";
@@ -318,6 +321,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A5501E5A1C839D1F005E5124 /* StudentLocationData.swift in Sources */,
 				A5B63FDB1C54A98600412B89 /* StudentLocation.swift in Sources */,
 				A55132741C1D59D300AB40D0 /* LogInViewController.swift in Sources */,
 				A55132481C1D58EC00AB40D0 /* TableViewController.swift in Sources */,
